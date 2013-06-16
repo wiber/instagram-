@@ -1,28 +1,39 @@
-(function () {
-    Meteor.loginWithInstagram = function (options, callback) {
-        // support both (options, callback) and (callback).
-        if (!callback && typeof options === 'function') {
-            callback = options;
-            options = {};
-        }
+// adapted from facebook_client.js
+// Request Instagram credentials for the user
+// @param options {optional}
+// @param credentialRequestCompleteCallback {Function} Callback function to call on
+//   completion. Takes one argument, credentialToken on success, or Error on
+//   error.
+Instagram.requestCredential = function (options, credentialRequestCompleteCallback) {
+  // support both (options, callback) and (callback).
+  if (!credentialRequestCompleteCallback && typeof options === 'function') {
+    credentialRequestCompleteCallback = options;
+    options = {};
+  }
 
-        var config = Accounts.loginServiceConfiguration.findOne({service: 'instagram'});
-        if (!config) {
-            callback && callback(new Accounts.ConfigError("Service not configured"));
-            return;
-        }
+  var config = ServiceConfiguration.configurations.findOne({service: 'instagram'});
+  if (!config) {
+    credentialRequestCompleteCallback && credentialRequestCompleteCallback(new ServiceConfiguration.ConfigError("Service not configured"));
+    return;
+  }
 
-        var state = Meteor.uuid();
-        // XXX need to support configuring access_type and scope
-        var loginUrl =
-            'https://instagram.com/oauth/authorize' +
-                '?client_id=' + config.clientId +
-                '&redirect_uri=' + Meteor.absoluteUrl('_oauth/instagram?close=close', {replaceLocalhost: true}) +
-                '&response_type=code' +
-                '&scope=' + config.scope +
-                '&state=' + state;
+  var credentialToken = Random.id();
+  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+  var display = mobile ? 'touch' : 'popup';
 
-        Accounts.oauth.initiateLogin(state, loginUrl, callback);
-    };
+  var scope = "basic+relationships+likes+comments";
+  if (options && options.requestPermissions)
+    scope = options.requestPermissions.join('+');
 
-}) ();
+  var loginUrl =
+        'https://instagram.com/oauth/authorize' +
+        '?client_id=' + config.appId +
+        '&redirect_uri=' +  Meteor.absoluteUrl('_oauth/instagram?close=close', {replaceLocalhost: true}) +
+        // from prior 
+        '&response_type=code' +
+        '&display=' + display + 
+        '&scope=' + scope +
+        '&state=' + credentialToken;
+  Oauth.initiateLogin(credentialToken, loginUrl, credentialRequestCompleteCallback);
+};
+

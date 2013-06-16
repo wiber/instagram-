@@ -1,3 +1,4 @@
-if (!Accounts.instagram) {
-    Accounts.instagram = {};
+if (typeof Instagram === 'undefined') {
+  Instagram = {};
 }
+
