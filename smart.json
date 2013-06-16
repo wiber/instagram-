@@ -1,8 +1,8 @@
 {
-    "name": "accounts-instagram",
-    "description":  "Login service for Instagram accounts.",
-    "homepage": "https://github.com/motro/meteor-accounts-instagram",
-    "author": "Yossi Motro",
-    "version": "0.2.1",
-    "git": "https://github.com/motro/meteor-accounts-instagram.git"
+    "name": "instagram-",
+    "description":  "Instagram OAuth flow, dependency to accounts-instagram-",
+    "homepage": "https://github.com/wiber/meteor-instagram-.git",
+    "author": "Elias Moosman",
+    "version": "0.0.1",
+    "git": "https://github.com/wiber/meteor-instagram-.git"
 }
